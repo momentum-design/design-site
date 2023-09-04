@@ -1,0 +1,34 @@
+<div class="article">
+  <div class="article_l"></div>
+  <div class="article_m">
+    <div class="article_banner" [innerHTML]="safeHTML(htmlBanner)"></div>
+  </div>
+  <div class="article_r"></div>
+</div>
+<div class="article">
+  <div class="article_l"></div>
+  <div class="article_m">
+    <mm-tab
+      [tabs]="tabKeys"
+      *ngIf = "tabKeys && tabKeys.length>1"
+      (onClickTab)="clickTab($event)"
+    ></mm-tab>
+    <div class="article_content" 
+      *ngFor="let tab of tabs;let i = index;" 
+      [style.display]="dataIndex === i ? 'block' : 'none'"
+      [innerHTML]="safeHTML(tab.html)"></div>  
+  </div>
+  <div class="article_r" #articleR>
+    <div class="article_sub_tab"
+    *ngFor="let tab of tabs;let i = index;" 
+    [style.display]="dataIndex === i && tabKeys && tabKeys.length>1 ? 'block' : 'none'">
+        <h2 *ngIf="tab.archorsIdInOrder.length > 0">{{pageId}}</h2>
+        <a *ngFor="let sid of tab.archorsIdInOrder;"
+        tabindex="3"
+        [attr.aria-label]="tab.archors[sid].name"
+        [title]="tab.archors[sid].name"
+        (click)="scroll(sid)">{{ tab.archors[sid].name }}</a>
+    </div>
+  </div>
+</div>
+<a class="article_back-to-top" #btnBackToTop (click)="scrollToTop()"></a>

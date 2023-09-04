@@ -1,0 +1,57 @@
+@use "sass:math";
+
+@mixin block($width, $height, $display: block) {
+    display: $display;
+    height: $height;
+    line-height: $height;
+    width: $width;
+}
+
+@mixin position($top: 0, $left: 0, $position: absolute) {
+    position: $position;
+    top:$top;
+    left:$left;
+}
+
+@mixin position4($top: 0, $right: 0, $bottom: auto, $left: auto, $position: absolute) {
+    @include position($top, $left, $position);
+    
+    right:$right;
+    bottom:$bottom;
+}
+
+@mixin placeholder($width:auto, $height:auto) {
+    &::before {
+        content: '';
+        display: block;
+        height: $height;
+        width: $width;
+    }
+}
+
+@mixin clear() {
+    &::after {
+        @include block(0, 0, block);
+
+        content: '';
+        clear: both;
+        zoom: 1;
+        overflow: hidden;
+    }
+}
+
+@mixin container() {
+    @include block(100%, auto);
+    overflow: hidden;
+}
+
+@mixin container-page() {
+    @include block(100%, auto);
+    overflow-x: hidden;
+}
+
+@mixin video-size($width, $margin: 0) {
+    width: 100%;
+    max-width: $width - $margin *2 ;
+    height: math.div(($width - $margin *2) * 1080, 1920 );
+}

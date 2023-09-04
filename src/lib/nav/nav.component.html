@@ -1,0 +1,15 @@
+<div class="nav_header">
+    <a class="nav_btn" (click)="switchMenum()"></a>
+    <a class="nav_logo" [routerLink]="homelink"></a>
+</div>
+<div class="nav_content">
+    <mm-nav-item
+        *ngFor="let nav of navs;"
+        [nav_url]="nav.path"
+        [nav_name]="nav.nav"
+        [nav_externalUrl]="nav.externalUrl"
+        [sub_navs]="sub_navs(nav.nav)"
+    ></mm-nav-item>
+    <div class="space"></div>
+</div>
+

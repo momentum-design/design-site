@@ -1,0 +1,30 @@
+name: Publish Website customize
+on:
+  workflow_dispatch:
+    inputs:
+      baseHref:
+          required: false
+          type: string
+
+jobs:
+  jobBuild:
+    name: Publish Website
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out
+      uses: actions/checkout@master
+    - name: Install Package
+      run: npm install
+    - name: collect figma data
+      run: npm run figma token='${{ secrets.FIGMA_TOKEN }}'
+    - name: build static website
+      run: npm run build-static repo='${{ github.repository }}' baseHref='${{ inputs.baseHref }}'
+    - name: Push git subdirectory as branch
+      uses: s0/git-publish-subdir-action@v2.5.1
+      env:
+        REPO: self
+        BRANCH: gh-pages
+        FOLDER: dist
+        GITHUB_TOKEN: ${{ secrets.ACTION_TOKEN }} 
+        SKIP_EMPTY_COMMITS: true
+        MESSAGE: "[skip ci](build static site):{msg}"
