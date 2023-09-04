@@ -1,0 +1,8 @@
+@use 'colors.scss' as colors;
+@use 'mixins.scss' as mixins;
+@use 'settings.scss' as settings;
+
+:host {
+    @include mixins.block(100%, 252px);
+    background: url('../../assets/images/momentum_logo_white.svg') no-repeat center;
+}

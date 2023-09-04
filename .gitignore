@@ -1,0 +1,11 @@
+/.angular/cache
+node_modules/
+dist/
+__local/
+figma/output/
+yarn.lock
+yarn-error.log
+package-lock.json
+src/assets/figma
+
+**/.DS_Store

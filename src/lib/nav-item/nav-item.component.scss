@@ -1,0 +1,83 @@
+@use 'colors.scss' as colors;
+@use 'functions.scss' as func;
+@use 'mixins.scss' as mixins;
+@use 'settings.scss' as settings;
+
+$text_indent:34px;
+
+:host {
+    @include mixins.block(auto, auto);
+}
+
+.nav {
+    @include mixins.block(100%, 46px, flex);
+
+    flex-direction: row;
+    position: relative;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+
+    i {
+        @include mixins.block(46px, 46px);
+
+        background: no-repeat center;
+        flex: none;
+    }
+
+    .nav_title {
+        @include mixins.block(auto, 46px);
+        text-transform: capitalize;
+        font-size: 16px;
+        user-select: none;
+        flex: 1;
+    }
+
+    .nav_folder_icon {
+        @include mixins.block(32px, 46px);
+        user-select: none;
+        background: url('../../assets/icons/arrow-down.svg') no-repeat center;
+        flex: none;
+        cursor: pointer;
+    }
+
+    .fold {
+        transform: rotate(180deg);
+    }
+
+    &:hover {
+        background: #1A1A1A;;
+    }
+}
+
+.current {
+    background: #1A1A1A;;
+
+    &::before {
+        @include mixins.block(4px, 46px);
+        @include mixins.position(0, 0);
+    
+        content: '';
+        background: colors.$font-primary;
+    }
+}
+
+.sub_nav {
+    @include mixins.block(100%, 46px);
+
+    cursor: pointer;
+    font-size: 16px;
+    text-indent: $text_indent;
+    color: colors.$font-secondary;
+    text-transform: capitalize;
+    position: relative;
+
+    &:hover {
+        background: #1A1A1A;
+    }
+    
+    .current {
+        background: #1A1A1A;
+    }
+}
+

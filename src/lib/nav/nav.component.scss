@@ -1,0 +1,109 @@
+@use 'colors.scss' as colors;
+@use 'functions.scss' as func;
+@use 'mixins.scss' as mixins;
+@use 'settings.scss' as settings;
+
+:host {
+    @include mixins.block(settings.$header-width, auto, block);
+}
+
+.nav_header {
+    @include mixins.block(settings.$header-width, settings.$header-height, block);
+    background: #000;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    z-index: settings.$z-index-fixed;
+
+    .nav_logo {
+        @include mixins.block(131px, settings.$header-height, inline-block);
+        
+        margin-left: 32px;
+        cursor: pointer;
+        background: url('../../assets/images/mometnum_design_logo.svg') no-repeat center;
+    }
+
+    .nav_btn {
+        @include mixins.block(32px, settings.$header-height, none);
+        
+        cursor: pointer;
+        margin-left: 32px;
+    }
+}
+
+.nav_content {
+    @include mixins.block(settings.$header-width, auto, flex);
+    background: #000;
+    overflow-x: hidden;
+    flex-direction: column;
+    flex:1;
+    transition: width .2s ease-in-out 0s;
+
+    &::before {
+        content: '';
+        @include mixins.block(settings.$header-width, 20px+settings.$header-height, block);
+    }
+
+    mm-nav-item {
+        @include mixins.block(100%, auto);
+        
+        flex: none;
+    }
+    
+    .space {
+        @include mixins.block(100%, auto);
+    
+        flex: 1;
+    }
+}
+
+:host(.host_show_menu) {
+    height: 100vh;
+
+    .nav_content {
+        mm-nav-item,.space {
+            display: block;
+        }
+    }
+}
+
+// mobile
+@media screen and (max-width: settings.$response-width-middle) {
+
+    .nav_header  {
+
+        width: 100vw;
+
+        .nav_btn {
+            background: url('../../assets/icons/list-menu.svg') no-repeat center;
+            display: inline-block;
+        }
+    }
+
+    .nav_content {
+        width: 0px;
+
+        mm-nav-item,.space {
+            display: none;
+            width: 0%;
+        }
+    }
+
+    :host(.host_show_menu) {
+
+        .nav_btn {
+            background: url('../../assets/icons/cancel.svg') no-repeat center;
+        }
+
+        .nav_content {
+            width: settings.$header-width;
+            
+            mm-nav-item,.space {
+                display: block;
+                width: 100%;
+            }
+        }
+    }
+
+
+}
