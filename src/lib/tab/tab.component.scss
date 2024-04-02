@@ -1,0 +1,37 @@
+@use 'colors.scss' as colors;
+@use 'functions.scss' as func;
+@use 'mixins.scss' as mixins;
+@use 'settings.scss' as settings;
+@use "sass:math";
+
+$tab_height:32px;
+
+:host {
+    @include mixins.block(auto, $tab_height, block);
+
+    text-align: left;
+    flex-direction: row;
+
+    >a {
+        @include mixins.block(auto, 38px, inline-block);
+
+        margin-right: 8px;
+        padding: 0 12px;
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.70);
+        text-align: center;
+        border-radius: 20px;
+        user-select: none;
+        cursor: pointer;
+    }
+
+    >a:last-child {
+        margin-right: 0px;
+    }
+
+    .current, a:hover {
+        background-color: rgba(255,255,255,0.2);
+        color: rgba(255, 255, 255, 0.95);
+    }
+}
+

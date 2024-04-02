@@ -1,0 +1,7 @@
+<a 
+    tabindex="2"
+    [attr.aria-label]="tab"
+    [title]="tab"
+    *ngFor="let tab of tabs; let i=index;" 
+    [ngClass]="{'current': i===current}"
+    (click)="clickTab(i)">{{tab}}</a>
