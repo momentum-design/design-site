@@ -32,7 +32,7 @@
 }
 
 .nav_content {
-    @include mixins.block(settings.$header-width, auto, flex);
+    @include mixins.block(settings.$header-width, 100vh, flex);
     background: #000;
     overflow-x: hidden;
     flex-direction: column;
@@ -58,7 +58,6 @@
 }
 
 :host(.host_show_menu) {
-    height: 100vh;
 
     .nav_content {
         mm-nav-item,.space {
@@ -87,6 +86,13 @@
             display: none;
             width: 0%;
         }
+    }
+
+    :host {
+        position: fixed;
+        top: 0px;
+        left: 0px;
+        z-index: settings.$z-index-fixed;
     }
 
     :host(.host_show_menu) {

@@ -159,13 +159,6 @@ ul .UNORDERED{
     flex-direction: row!important;
 }
 
-.article_banner>div::after,.article_banner>div::before {
-    display: block;
-    content: '';
-    height: 1px;
-    flex:1;
-}
-
 .article_banner>div>div {
     width: 1150px!important;
     height: 100%;
@@ -274,11 +267,10 @@ ul .UNORDERED{
     }
 
     .article_banner>div>div { 
-        width: auto!important;
-        flex: 1!important;
+        width: 100%!important;
     }
 
-    .article_l, .article_r,.article_banner>div::after,.article_banner>div::before {
+    .article_l, .article_r {
         width: 65px;
         flex: none;
     }
@@ -286,7 +278,7 @@ ul .UNORDERED{
 
 @media screen and (max-width: settings.$response-width-middle) {
 
-    .article_l, .article_r,.article_banner>div::after,.article_banner>div::before {
+    .article_l, .article_r {
         width: 32px;
     }
 
