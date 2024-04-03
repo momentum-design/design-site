@@ -18,8 +18,8 @@ This is a repo which helps to convert figma files to Website. This repo will dep
             "banner": "🏷️", // node start with this text will be banner in page
             "image": "🖼️" // node start with this text will be converted into image
         },
-        "design_guidelines": {
-            "file": "YOUR FIGMA FILE ID for design_guidelines",
+        "guidelines": {
+            "file": "YOUR FIGMA FILE ID for guidelines",
             "page": "✅",
             "tab": "💻",
             "banner": "🏷️",

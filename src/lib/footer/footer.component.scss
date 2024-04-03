@@ -3,6 +3,102 @@
 @use 'settings.scss' as settings;
 
 :host {
-    @include mixins.block(100%, 252px);
-    background: url('../../assets/images/momentum_logo_white.svg') no-repeat center;
+    @include mixins.block(100%, auto);
+    padding: 60px 32px;
+    align-items: center;
+
+    * {
+        font-size: 12px;
+        line-height: 24px;
+    }
+
+    a {
+        display: inline-block;
+        background-repeat: no-repeat;
+        background-position: center;
+        color: rgba(255, 255, 255, 0.95);
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .foot_link_main {
+        font-size: 14px;
+        height: 75px; 
+        line-height: 75px;
+        text-transform: capitalize;
+    }
+
+    .foot_a {
+        text-decoration: underline;
+    }
+}
+
+.foot_con_middle {
+    margin: 80px 0 24px 0;
+}
+
+.foot_con {
+    @include mixins.block(100%, auto, flex);
+    flex-direction: row;
+}
+
+.foot_con_l {
+    @include mixins.block(auto, auto, block);
+    flex: 1;
+
+    .foot_icon {
+        @include mixins.block(24px, 24px, inline-block);
+
+        margin-right: 24px;
+    }
+
+    .foot_icon:last-child {
+        margin-right: 0px;
+    }
+}
+
+.foot_con_r{
+    @include mixins.block(auto, auto, block);
+    flex: none;
+
+    .foot_link {
+        padding: 0 20px;
+        border-radius: 4px;
+    }
+
+    .foot_link:hover {
+        background: #1A1A1A;;
+    }
+
+}
+
+.foot_momentum_icon {
+    @include mixins.block(75px, 74px, inline-block);
+}
+
+.foot_cisco_icon {
+    @include mixins.block(35px, 19px, inline-block);
+
+    margin-right: 8px;
+}
+
+
+// mobile
+@media screen and (max-width: settings.$response-width-middle) {
+    
+    :host {
+        .foot_link_main {
+            font-size: 14px;
+            height: 24px; 
+            line-height: 24px; 
+        }
+    }
+
+    .foot_con {
+        display: block;
+    }
+
+    .foot_con_r{ 
+        margin-top: 24px;
+    }
 }

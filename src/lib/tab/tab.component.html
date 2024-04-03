@@ -1,7 +1,9 @@
 <a 
-    tabindex="2"
+    tabindex="1"
+    role="tab"
     [attr.aria-label]="tab"
     [title]="tab"
     *ngFor="let tab of tabs; let i=index;" 
     [ngClass]="{'current': i===current}"
-    (click)="clickTab(i)">{{tab}}</a>
+    (click)="clickTab(i)"
+    (keydown.enter)="clickTab(i)">{{tab}}</a>

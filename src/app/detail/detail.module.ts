@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { DetailRoutingModule } from './detail-routing.module';
 import { DetailComponent } from './detail.component';
-import { TabModule } from '@lib';
+import { TabModule,FooterModule } from '@lib';
 
 
 @NgModule({
@@ -12,6 +12,7 @@ import { TabModule } from '@lib';
   ],
   imports: [
     TabModule,
+    FooterModule,
     CommonModule,
     DetailRoutingModule
   ],

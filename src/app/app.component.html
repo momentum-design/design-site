@@ -1,8 +1,14 @@
 <mm-nav></mm-nav>
 <div class="main" [ngStyle]= "{'background-image': backgroundTopImageUrl }">
     <mm-header></mm-header>
-    <div class="content" [ngStyle]= "{'background-image': backgroundBottomImageUrl }">
+    <div class="content">
         <router-outlet></router-outlet>
-        <mm-footer></mm-footer>
+        <div class="article">
+            <div class="article_l"></div>
+            <div class="article_m">
+                <mm-footer role="structure"></mm-footer>
+            </div>
+            <div class="article_r"></div>
+        </div>
     </div>
 </div>

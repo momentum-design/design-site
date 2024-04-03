@@ -157,7 +157,7 @@ export class SectionConvertor {
             content = contentArr.join('');
         }
         
-        let nc = new NodeConvertor(node, this.configKey, this.configSettings, this.componentsLib, parentLocaltion);
+        let nc = new NodeConvertor(node, this.configKey, this.config , this.configSettings, this.componentsLib, parentLocaltion);
         let html = nc.html(content);
         this.updateImgsAndArchors(nc.imgUrls, nc.archors);
         return  html;

@@ -1,7 +1,7 @@
 import { Component, AfterViewInit, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
-import { Article, DomHelper } from '@lib';
+import { Article, DomHelper, TabComponent } from '@lib';
 import { IHtmlPage, IHtmlTab } from '../../../figma/src/types';
 import { INDEX_PAGE } from '@types';
 
@@ -30,6 +30,7 @@ export class DetailComponent implements AfterViewInit {
 
   @ViewChild('articleR') articleR: ElementRef;
   @ViewChild('btnBackToTop') btnBackToTop: ElementRef;
+  @ViewChild(TabComponent) TabComponent: TabComponent;
 
   constructor(private sanitizer: DomSanitizer,
     private cd: ChangeDetectorRef,
@@ -56,10 +57,10 @@ export class DetailComponent implements AfterViewInit {
       if(doms && doms.length>0) {
         let subtab = doms[this.dataIndex];
         if(subtab) {
-          let marginTop = 10;
+          let marginTop = 72;
           let isShowSubTabs = DomHelper.style(subtab, 'display') != 'none';
           let articleRPostion = DomHelper.postion(this.articleR.nativeElement);
-          if(isShowSubTabs && scrollTop > articleRPostion.y + marginTop) {
+          if(isShowSubTabs && scrollTop > articleRPostion.y - marginTop) {
             subtab.style.position = 'fixed';
             subtab.style.top = marginTop+'px';
             subtab.style.left = articleRPostion.x+'px';
@@ -82,6 +83,10 @@ export class DetailComponent implements AfterViewInit {
 
   safeHTML(unsafeHtml:string) {
     return this.sanitizer.bypassSecurityTrustHtml(unsafeHtml)
+  }
+
+  formatName(str:string) {
+    return str.replace(/\_/g,' ')
   }
 
   sortTab(a:string, b:string) {
@@ -138,8 +143,7 @@ export class DetailComponent implements AfterViewInit {
         this.dataIndex = 0;
       }
     });
-    this.clickTab(0);
-    this.checkSubTabs();
+    //this.tab.clickTab(0);
   }
 
 }

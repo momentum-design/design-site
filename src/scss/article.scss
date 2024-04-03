@@ -4,7 +4,7 @@
 @use 'settings.scss' as settings;
 
 ul {
-    padding: 20px;
+    padding-left: 20px;
 }
 
 ul li {
@@ -27,6 +27,11 @@ ul .UNORDERED{
     list-style-type: disc;
 }
 
+.xlarge_h1{
+    font-size: 100px!important;
+    font-weight: 200!important;
+    line-height: 95px!important; 
+}
 
 .article_back-to-top {
     @include mixins.block(52px, 52px,none);
@@ -39,6 +44,7 @@ ul .UNORDERED{
 }
 
 .article_banner, .article_content {
+
     .table {
         overflow: hidden;
     }
@@ -50,28 +56,28 @@ ul .UNORDERED{
 
     h1 {
         font-size: 64px;
-        font-weight: 700;
+        font-weight: 600;
         height: 78px;
         line-height: 78px; 
     }
     
     h2 {
         font-size: 44px;
-        font-weight: 700;
+        font-weight: 600;
         height: 60px;
         line-height: 60px; 
     }
     
     h3 {
         font-size: 32px;
-        font-weight: 700;
+        font-weight: 600;
         height: 48px;
         line-height: 48px; 
     }
     
     h4 {
         font-size: 28px;
-        font-weight: 700;
+        font-weight: 600;
         height: 40px;
         line-height: 40px; 
     }
@@ -85,7 +91,7 @@ ul .UNORDERED{
 
     h6 {
         font-size: 24px;
-        font-weight: 700;
+        font-weight: 600;
         height: 25px;
         line-height: 25px; 
     }
@@ -93,7 +99,7 @@ ul .UNORDERED{
     .p_large_bold {
         font-size: 22px;
         font-style: normal;
-        font-weight: 700;
+        font-weight: 600;
         line-height: 28px;
     }
 
@@ -115,7 +121,7 @@ ul .UNORDERED{
     .p_bold {
         font-size: 18px;
         font-style: normal;
-        font-weight: 700;
+        font-weight: 600;
         line-height: 24px;
     }
 
@@ -134,7 +140,7 @@ ul .UNORDERED{
         text-decoration-line: underline; 
     }
 
-    .block_link {
+    .block_link, .img_link{
         display: block;
         line-height: auto;
         text-decoration: none;
@@ -208,9 +214,10 @@ ul .UNORDERED{
             text-decoration: underline;
         }
 
-        .block_link {
-            display:  block;
+        .block_link, .img_link{
+            display: block;
             text-decoration: none;
+            cursor: pointer;
         }
     }
     
@@ -229,6 +236,7 @@ ul .UNORDERED{
             font-weight: normal;
             color: rgba(255,255,255, 0.7);
             line-height: 16px;
+            text-transform: capitalize;
         }
 
         a{
@@ -277,6 +285,10 @@ ul .UNORDERED{
 }
 
 @media screen and (max-width: settings.$response-width-middle) {
+
+    .xlarge_h1{
+        font-size: 72px!important;
+    }
 
     .article_l, .article_r {
         width: 32px;

@@ -8,6 +8,7 @@ export interface IConfigSettings {
     fonts: Record<string,any>;
     containers: Record<string, any>;
     hyperlinkSeparator: string;
+    specialClass: string;
 }
 
 export interface IConfigItem {
