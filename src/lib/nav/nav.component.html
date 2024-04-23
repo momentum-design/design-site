@@ -1,6 +1,11 @@
 <div class="nav_header">
-    <a class="nav_btn" (click)="switchMenum()"></a>
-    <a class="nav_logo" [routerLink]="homelink"></a>
+    <a class="nav_btn" (click)="switchMenum()" 
+    tabindex="1"
+    (keydown.enter)="switchMenum()"
+    role="button" aria-label="switch navigation"
+    title="switch navigation"></a>
+    <a class="nav_logo" [routerLink]="homelink"  tabindex="1"
+    title="Momentum design, home page" aria-label="Momentum design, home page"></a>
 </div>
 <div class="nav_content">
     <mm-nav-item

@@ -9,6 +9,9 @@ export class TabComponent implements OnInit {
 
   current = 0;
   @Input() tabs: string[];
+  @Input() set select(val: number) {
+    this.current = val;
+  };
 
   @Output() onClickTab = new EventEmitter<number>();
 

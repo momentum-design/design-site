@@ -35,6 +35,9 @@
     @include mixins.block(settings.$header-width, 100vh, flex);
     background: #000;
     overflow-x: hidden;
+    position: fixed;
+    top: 0px;
+    left: 0px;
     flex-direction: column;
     flex:1;
     transition: width .2s ease-in-out 0s;

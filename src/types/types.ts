@@ -23,4 +23,11 @@ export interface IPageInfoNode {
     children?: Record<string, IPageInfoNode>;
 }
 
+export type ITagAProps = {
+    href: string;
+    title: string;
+    image?: string;
+    external?: boolean;
+};
+
 export const INDEX_PAGE = 'index';

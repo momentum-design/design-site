@@ -1,4 +1,4 @@
-import { ConvertTagType, ExportFilePath, ILocaltion, IDomTreeNode, IHtmlArchor, IConfigSettings } from "../types";
+import { ConvertTagType, ExportFilePath, ILocaltion, IDomTreeNode, IHtmlArchor, IConfigSettings, IConfigItem } from "../types";
 import { IO } from '../io';
 import { ComponentsLib } from './componentsLib';
 import { publicResource } from '../api/publicResource';
@@ -7,7 +7,7 @@ const regTag = /^h\d$/i;
 const regHttps = /^https?\:\/\//;
 const regHtmlId = /\:|\;|\,/g;
 const regNewline = /\n|\r/g;
-const TABINDEX="8";
+const TABINDEX="1";
 
 export class NodeConvertor {
 
@@ -17,6 +17,7 @@ export class NodeConvertor {
     imgUrls:Record<string, string>;
     archors:Record<string, IHtmlArchor>;
     configKey:string;
+    config:IConfigItem;
     configSettings: IConfigSettings;
     componentsLib:ComponentsLib;
     parentLocaltion:ILocaltion | undefined;
@@ -26,13 +27,14 @@ export class NodeConvertor {
         return names.join('_');
     }
 
-    constructor(node:IDomTreeNode, configKey:string, configSettings: IConfigSettings, componentsLib:ComponentsLib, parentLocaltion?:ILocaltion) {
+    constructor(node:IDomTreeNode, configKey:string,config:IConfigItem, configSettings: IConfigSettings, componentsLib:ComponentsLib, parentLocaltion?:ILocaltion) {
         this.figmaAPIData = node.figmaAPIData;
         this.textComponentName = node.textComponentName;
         this.type = node.type;
         this.imgUrls = {};
         this.archors = {};
         this.configKey = configKey;
+        this.config = config;
         this.configSettings = configSettings;
         this.componentsLib = componentsLib;
         this.parentLocaltion = parentLocaltion;
@@ -50,6 +52,11 @@ export class NodeConvertor {
         }
     }
 
+    private getImageName(name:string) {
+        let reg = new RegExp('^'+this.config.image);
+        return name.replace(reg,'');
+    }
+
     private img() {
         // use componentID
         let imageID = this.componentsLib.getImageId(this.figmaAPIData);
@@ -57,18 +64,32 @@ export class NodeConvertor {
         let url = IO.getAssetsImgUrl(this.configKey, imageID, this.configSettings.exportImage.format);
         //let url = path.join(this.assetBaseUrl, imageID);
         this.imgUrls[imageID] = url;
+
         this.cssLayout({
             display: 'block'
         }, true);
+        let ck = this.checkIfHasLink(this.figmaAPIData.name);
+        let href= ck.href;
+        let title;
         //this.cssColor();
-        return `<img tabindex="${TABINDEX}" style="${this.css()}" alt="${this.figmaAPIData.name}" src=${url} />`;
+        if(ck.hasLink) {
+            this.styles['background-image'] = `url('${url}')`;
+            this.styles['background-repeat'] = 'no-repeat';
+            this.styles['background-position'] = 'center';
+            this.styles['overflow'] = 'hidden';
+            title = this.getImageName(ck.arr[0]);
+            return `<a${href} role="button" tabindex="${TABINDEX}" style="${this.css()}" aria-label="${title}" title="${ title }"></a>`;
+        } else {
+            title = this.getImageName(this.figmaAPIData.name);
+            return `<img tabindex="${TABINDEX}" style="${this.css()}"  alt="${ title }" src=${url} />`;
+        }
     }
 
     private toHtmlId(id) {
         return id.replace(regHtmlId, '_');
     }
 
-    private shadowTextNode(content, styleData, differStyle) {
+    private shadowTextNode(content, styleData?, differStyle?) {
         let tag = differStyle ? 'span' : '';
         let urlAttr = '';
         if(styleData && styleData.hyperlink
@@ -90,6 +111,7 @@ export class NodeConvertor {
 
     private textInnerHTML(content) {
         let chars = this.figmaAPIData.characterStyleOverrides;
+        // content.length != this.figmaAPIData.characterStyleOverrides.length
         if(content && content.length>0 && chars && chars.length>0) {
             let innerHTML = [];
             let _currentStyle = chars[0];
@@ -109,6 +131,10 @@ export class NodeConvertor {
                 let styleId = this.figmaAPIData.characterStyleOverrides[charStartIndex];
                 //shadowTextNode]
                 innerHTML.push(this.shadowTextNode(txt,this.figmaAPIData.styleOverrideTable[styleId],differStyles[styleId]));
+            }
+            if(content.length>chars.length) {
+                let lastText = content.slice(chars.length);
+                innerHTML.push(this.shadowTextNode(lastText));
             }
             return innerHTML.join('');
         }
@@ -142,11 +168,18 @@ export class NodeConvertor {
         let tag = 'p';
         let urlAttr = '';
         let className = '';
-        let lowerName = (this.textComponentName || this.figmaAPIData.name).toLowerCase();
-
+        let classNames = [];
+        let lowerNodeNames = this.figmaAPIData.name.toLowerCase().split(this.configSettings.specialClass);
+        let lowerName = this.textComponentName? this.textComponentName.toLowerCase() : lowerNodeNames[0];
         // className
         if(this.componentsLib.isFontName(lowerName)) {
-            className = `class="${lowerName}"`;
+            classNames.push(lowerName);
+        }
+        if(lowerNodeNames.length>1) {
+            classNames.push(lowerNodeNames[1]);
+        }
+        if(classNames.length>0) {
+            className = `class="${classNames.join(' ')}"`;
         }
         
         // ifHasLink => a tag
@@ -184,16 +217,46 @@ export class NodeConvertor {
         Object.assign(this.styles, this.cssFont());
         let innerHTML = this.textInnerHTML(this.figmaAPIData.characters);
 
-
+        let splitedHTML = innerHTML.split('<br>');
+        //ul li
         if(this.figmaAPIData.lineTypes && this.figmaAPIData.lineTypes.length>0 && this.figmaAPIData.lineTypes.indexOf('UNORDERED')!==-1) {
             tag = 'ul';
-            let innerHTMLS = innerHTML.split('<br>').map((d, i)=>{
-                return `<li class='${this.figmaAPIData.lineTypes[i]||'None'} ${lowerName}'>${d}</li>`
+            let innerHTMLS = splitedHTML.map((d, i)=>{
+                return `<li role="listitem" class="${this.figmaAPIData.lineTypes[i]||'None'} ${lowerName}" tabindex="${TABINDEX}" aria-label="${d}" title="${d}">${d}</li>`
             });
             innerHTML = innerHTMLS.join('');
         } 
+        // disable auto split feature
+        /*
+        else if(splitedHTML.length>0 && tag === 'p') {
+            let innerHTMLS = splitedHTML.map((splitedHTMLLine)=>{
+                return `<${tag} ${className} ${urlAttr} id="${id}" tabindex="${TABINDEX}" aria-label="${content}" title="${content}" style="${this.css()}" >${splitedHTMLLine}</${tag}>`;
+            });
+            return innerHTMLS.join('');
+        }
+        */
+        let role = 'document';
+        switch (tag) {
+            case 'ul': 
+                role = 'list';
+                break;
+            case 'p': 
+                role = 'document';
+                break;
+            case 'a': 
+                role = 'link';
+                break;
+            case 'h1': 
+            case 'h2': 
+            case 'h3': 
+            case 'h4': 
+            case 'h5': 
+            case 'h6': 
+                role = 'heading';
+                break;
+        }
 
-        return `<${tag} ${className} ${urlAttr} id="${id}" tabindex="${TABINDEX}" aria-label="${content}" title="${content}" style="${this.css()}" >${innerHTML}</${tag}>`;
+        return `<${tag} ${className} role="${role}" ${urlAttr} id="${id}" tabindex="${TABINDEX}" aria-label="${content}" title="${content}" style="${this.css()}" >${innerHTML}</${tag}>`;
 
     }
 
@@ -213,22 +276,37 @@ export class NodeConvertor {
         }
     }
 
+    private checkIfHasLink(name:string):any {
+        let arr = name.split(this.componentsLib.settings.hyperlinkSeparator);
+        let href ='';
+        let hasLink = false;
+        if(arr.length===2) {
+            hasLink = true;
+            if(regHttps.test(arr[1])) {
+                href = ` href="${arr[1]}" target="_blank"`;
+            } else {
+                href = ` href="${arr[1]}"`;
+            }
+        }
+        return {
+            hasLink: hasLink,
+            href: href,
+            arr: arr
+        };
+    }
+
     private div(content:string='') {
         let tag = 'div';
         let className='';
-        let href= '';
-        if(this.figmaAPIData.name && ['table','table_row','table_cell'].indexOf(this.figmaAPIData.name.toLowerCase())!==-1) {
-            className = `class="${this.figmaAPIData.name.toLowerCase()}"`;
-        }
-        let linksArrFromName = this.figmaAPIData.name.split(this.componentsLib.settings.hyperlinkSeparator);
-        if(linksArrFromName.length===2){
+        let ck = this.checkIfHasLink(this.figmaAPIData.name);
+        let href= ck.href;
+        if(ck.hasLink) {
             tag = 'a';
             className = `class="block_link"`;
-            if(regHttps.test(linksArrFromName[1])) {
-                href = ` href="${linksArrFromName[1]}" target="_blank"`
-            } else {
-                href = ` href="${linksArrFromName[1]}"`
-            }
+        }
+        // override links if table elements
+        if(this.figmaAPIData.name && ['table','table_row','table_cell'].indexOf(this.figmaAPIData.name.toLowerCase())!==-1) {
+            className = `class="${this.figmaAPIData.name.toLowerCase()}"`;
         }
         this.cssLayout();
         this.cssColor();

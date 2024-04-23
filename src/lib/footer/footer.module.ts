@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { ModuleWithProviders, NgModule } from '@angular/core';
 import { FooterComponent } from './footer.component';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
-  imports: [CommonModule],
+  imports: [CommonModule,RouterModule],
   declarations: [FooterComponent],
   exports: [FooterComponent],
 })

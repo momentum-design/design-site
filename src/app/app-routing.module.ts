@@ -2,16 +2,16 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes, PreloadAllModules } from '@angular/router';
 
 const routes: Routes = [{
-  path: 'design_guidelines',
+  path: 'guidelines',
   loadChildren: () => import('./detail/detail.module').then(m => m.DetailModule),
   data: { 
     navIndex: 2, 
-    nav: 'design_guidelines' }
+    nav: 'guidelines' }
 },{
-  path: 'design_guidelines/:name',
+  path: 'guidelines/:name',
   loadChildren: () => import('./detail/detail.module').then(m => m.DetailModule),
   data: { 
-    nav: 'design_guidelines'
+    nav: 'guidelines'
   }
 },{
   path: 'components',
@@ -24,17 +24,27 @@ const routes: Routes = [{
     nav: 'components'
   }
 },{
+  path: 'develop',
+  loadChildren: () => import('./detail/detail.module').then(m => m.DetailModule),
+  data: { 
+    navIndex: 6, 
+    nav: 'develop',
+    externalUrl: "https://momentum-design.github.io/momentum-design/en/"
+  }
+},{
   path: 'support',
   loadChildren: () => import('./detail/detail.module').then(m => m.DetailModule),
   data: { 
     navIndex: 7, 
-    nav: 'Support',
-    externalUrl: "https://form.asana.com/?k=nOjXcoSB1acIKrLJwHQZ9Q&d=5557457880942"
+    nav: 'support',
   }
 },{
-  path: 'momentum_philosophy',
+  path: 'philosophy',
   loadChildren: () => import('./detail/detail.module').then(m => m.DetailModule),
-  data: { navIndex: 1, nav: 'momentum_philosophy' }
+  data: { 
+    navIndex: 1, 
+    nav: 'philosophy' 
+  }
 },{
   path: '',
   loadChildren: () => import('./detail/detail.module').then(m => m.DetailModule),

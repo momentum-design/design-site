@@ -23,7 +23,7 @@ export class NavItemComponent implements OnInit {
   public isFolder = false;
 
   get image_url(): string {
-    let url = this.nav_url!='' ? this.nav_url : 'momentum_philosophy';
+    let url = this.nav_url!='' ? this.nav_url : 'philosophy';
     return `url('assets/data/${url}.svg')`;
   }
 

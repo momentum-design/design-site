@@ -1,18 +1,28 @@
-<a class="nav" *ngIf="!nav_externalUrl" tabindex="1" [routerLink]="nav_url"
-[routerLinkActive]="nav_active" [title]="nav_name" [attr.aria-label]="nav_name">
+<a class="nav" *ngIf="!nav_externalUrl"  tabindex="1" [routerLink]="nav_url"
+[routerLinkActive]="nav_active" [title]="nav_show_name" [attr.aria-label]="nav_show_name">
     <i [ngStyle]= "{'background-image': image_url }"></i>
-    <span class="nav_title">{{ nav_show_name }}</span>
-    <span (click)="switchNav()" *ngIf="sub_navs.length>0" [ngClass]="{fold:isFolder}" class="nav_folder_icon"></span>
+    <span class="nav_title" [title]="nav_show_name">{{ nav_show_name }}</span>
+    <span (click)="switchNav()"
+    (keydown.enter)="switchNav()" 
+    role="button"
+    tabindex="1"
+    *ngIf="sub_navs.length>0" [ngClass]="{fold:isFolder}" class="nav_folder_icon"></span>
 </a>
 <a class="nav" *ngIf="nav_externalUrl" tabindex="1" [href]="nav_externalUrl"
 target="_blank"
-[routerLinkActive]="nav_active" [title]="nav_name" [attr.aria-label]="nav_name">
+[routerLinkActive]="nav_active" [title]="nav_show_name" [attr.aria-label]="nav_show_name">
     <i [ngStyle]= "{'background-image': image_url }"></i>
-    <span class="nav_title">{{ nav_show_name }}</span>
-    <span (click)="switchNav()" *ngIf="sub_navs.length>0" [ngClass]="{fold:isFolder}" class="nav_folder_icon"></span>
+    <span class="nav_title" [title]="nav_show_name">{{ nav_show_name }}</span>
+    <span (click)="switchNav()"
+    (keydown.enter)="switchNav()" 
+    role="button"
+    tabindex="1"
+     *ngIf="sub_navs.length>0" [ngClass]="{fold:isFolder}" class="nav_folder_icon"></span>
 </a>
 <a *ngFor="let sub_nav of sub_urls; let i = index;" 
 tabindex="1" 
+[title]="sub_titles[i]" 
+[attr.aria-label]="sub_titles[i]"
 [ngClass]="{hide:isFolder}"
 [routerLink]="nav_url+'/'+sub_nav" 
 [routerLinkActive]="nav_active" 
