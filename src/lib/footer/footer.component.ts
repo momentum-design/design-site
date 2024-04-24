@@ -81,7 +81,6 @@ export class FooterComponent {
         external: isExternal
       }
     }).sort();
-    console.log(this.momentum_links)
   }
 
 }

@@ -25,6 +25,18 @@
   <meta name="msapplication-square150x150logo" content="assets/favicon/mstile-150x150.png" />
   <meta name="msapplication-wide310x150logo" content="assets/favicon/mstile-310x150.png" />
   <meta name="msapplication-square310x310logo" content="assets/favicon/mstile-310x310.png" />
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-YCZTNRQM36"></script>
+  <script>
+    if(location.href.indexOf('momentum.design')!==-1) {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-YCZTNRQM36');
+    } else {
+      console.log('NO ONLINE MODE');
+    }
+  </script>
 </head>
 <body>
   <app-root></app-root>
