@@ -7,6 +7,9 @@ const regTag = /^h\d$/i;
 const regHttps = /^https?\:\/\//;
 const regHtmlId = /\:|\;|\,/g;
 const regNewline = /\n|\r/g;
+const regNewlines =/(\n|\r)+/g;
+const regNewlineEnd = /(\n|\r)+$/g;
+const regNewlineStart = /^(\n|\r)+/g;
 const TABINDEX="1";
 
 export class NodeConvertor {
@@ -105,40 +108,62 @@ export class NodeConvertor {
         if(!differStyle) {
             differStyle = {};
         }
+        let preBR='';
+        let appendBR='';
+        if(regNewlineStart.test(content)) {
+            preBR='<br>';
+        }
+        if(regNewlineEnd.test(content)) {
+            appendBR='<br>';
+        } 
         differStyle['display'] = 'inline';
-        return `<${tag} ${urlAttr} title="${content}" style="${this.css(differStyle)}" >${content.replace(regNewline,'<br>')}</${tag}>`; 
+        return `${appendBR}<${tag} ${urlAttr} style="${this.css(differStyle)}" >${content}</${tag}>${preBR}`; 
     }
 
-    private textInnerHTML(content) {
+    private safeHtml(content:string):string {
+        return content.replace(regNewlines,'<br>');
+    }   
+
+    private textInnerHTML(content, currentStart=0) {
         let chars = this.figmaAPIData.characterStyleOverrides;
         // content.length != this.figmaAPIData.characterStyleOverrides.length
         if(content && content.length>0 && chars && chars.length>0) {
             let innerHTML = [];
-            let _currentStyle = chars[0];
+            let _currentStyle = chars[currentStart];
             let _starts=[0];
-            for(let i=1;i<chars.length;i++) {
-                if(chars[i]!=_currentStyle) {
+            for(let i=1;i<content.length;i++) {
+                let indexInAll = currentStart+i;
+                if(indexInAll<chars.length) {
+                    if(chars[indexInAll]!== _currentStyle) {
+                        _currentStyle = chars[indexInAll];
+                        _starts.push(i);
+                    }
+                } else if (indexInAll===chars.length){
                     _starts.push(i);
-                    _currentStyle = chars[i];
                 }
             }
-            _starts.push(chars.length);
+            _starts.push(content.length);
             let differStyles = this.createDifferStyles();
             for(let index=0;index<_starts.length-1;index++) {
                 let charStartIndex = _starts[index];
                 let charEndIndex = _starts[index+1]
                 let txt = content.slice(charStartIndex,charEndIndex);
-                let styleId = this.figmaAPIData.characterStyleOverrides[charStartIndex];
+                let styleId = this.figmaAPIData.characterStyleOverrides[currentStart+charStartIndex];
                 //shadowTextNode]
-                innerHTML.push(this.shadowTextNode(txt,this.figmaAPIData.styleOverrideTable[styleId],differStyles[styleId]));
+                if(styleId) {
+                    innerHTML.push(this.shadowTextNode(txt,this.figmaAPIData.styleOverrideTable[styleId],differStyles[styleId]));
+                } else {
+                    innerHTML.push(this.shadowTextNode(txt));
+                }
             }
+            /*
             if(content.length>chars.length) {
                 let lastText = content.slice(chars.length);
                 innerHTML.push(this.shadowTextNode(lastText));
-            }
+            }*/
             return innerHTML.join('');
         }
-        return content.replace(regNewline,'<br>');
+        return this.safeHtml(content);
     }
 
     // call after css color
@@ -150,7 +175,7 @@ export class NodeConvertor {
             let ComputedStyle = this.cssFont({
                 style: SubNodeStyle,
                 fills: SubNodeStyle.fills
-            });
+            }, true);
             let diffStyle= {};
             Object.keys(ComputedStyle).forEach((prop)=>{
                 if(rootStyle[prop]!== ComputedStyle[prop]) {
@@ -215,26 +240,22 @@ export class NodeConvertor {
         }
         this.cssLayout();
         Object.assign(this.styles, this.cssFont());
-        let innerHTML = this.textInnerHTML(this.figmaAPIData.characters);
+        let innerHTML;
 
-        let splitedHTML = innerHTML.split('<br>');
-        //ul li
         if(this.figmaAPIData.lineTypes && this.figmaAPIData.lineTypes.length>0 && this.figmaAPIData.lineTypes.indexOf('UNORDERED')!==-1) {
             tag = 'ul';
-            let innerHTMLS = splitedHTML.map((d, i)=>{
-                return `<li role="listitem" class="${this.figmaAPIData.lineTypes[i]||'None'} ${lowerName}" tabindex="${TABINDEX}" aria-label="${d}" title="${d}">${d}</li>`
+            let lines = this.figmaAPIData.characters.split('\n');
+            let currentStart=0;
+            let _lis = lines.map((lineText,i)=>{
+                let retStr = `<li role="listitem" class="${this.figmaAPIData.lineTypes[i]||'None'}" tabindex="${TABINDEX}" title="${lineText}" aria-label="${lineText}">${this.textInnerHTML(lineText, currentStart)}</li>`;
+                currentStart += lineText.length+1;
+                return retStr
             });
-            innerHTML = innerHTMLS.join('');
-        } 
-        // disable auto split feature
-        /*
-        else if(splitedHTML.length>0 && tag === 'p') {
-            let innerHTMLS = splitedHTML.map((splitedHTMLLine)=>{
-                return `<${tag} ${className} ${urlAttr} id="${id}" tabindex="${TABINDEX}" aria-label="${content}" title="${content}" style="${this.css()}" >${splitedHTMLLine}</${tag}>`;
-            });
-            return innerHTMLS.join('');
+            innerHTML = _lis.join('');
+        } else {
+            innerHTML = this.textInnerHTML(this.figmaAPIData.characters);
         }
-        */
+
         let role = 'document';
         switch (tag) {
             case 'ul': 
@@ -514,14 +535,16 @@ export class NodeConvertor {
     }
 
     // stlye
-    private cssFont(data=this.figmaAPIData) {
+    private cssFont(data=this.figmaAPIData, ifScanMore:boolean = false) {
         const _fStyle = data.style;
         if(_fStyle) {
             const _style:Record<string, any> = {};
-            //if(_fStyle.fontWeight !=undefined) _style['font-weight'] = _fStyle.fontWeight;
-            //if(_fStyle.fontSize !=undefined) _style['font-size'] = Math.round(_fStyle.fontSize)+'px';
-            //if(_fStyle.letterSpacing !=undefined) _style['letter-spacing'] = Math.round(_fStyle.letterSpacing)+'px';
-            //if(_fStyle.lineHeightPx !=undefined) _style['line-height'] = Math.round(_fStyle.lineHeightPx)+'px';
+            if(ifScanMore) {
+                if(_fStyle.fontWeight !=undefined) _style['font-weight'] = _fStyle.fontWeight;
+                if(_fStyle.fontSize !=undefined) _style['font-size'] = Math.round(_fStyle.fontSize)+'px';
+                if(_fStyle.letterSpacing !=undefined) _style['letter-spacing'] = Math.round(_fStyle.letterSpacing)+'px';
+                if(_fStyle.lineHeightPx !=undefined) _style['line-height'] = Math.round(_fStyle.lineHeightPx)+'px';
+            }
             if(_fStyle.textAlignHorizontal !=undefined) _style['text-align'] = (_fStyle.textAlignHorizontal as string).toLowerCase();
             if(Array.isArray(data.fills) && data.fills.length>0) {
                 let _fill  = data.fills[0];
